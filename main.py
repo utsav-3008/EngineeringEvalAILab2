@@ -9,6 +9,7 @@ from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
 df = pd.read_csv("AppGallery.csv")
 
@@ -172,3 +173,10 @@ classifier = RandomForestClassifier(n_estimators=1000, random_state=0)
 
 classifier.fit(X_train, y_train)
 
+y_pred = classifier.predict(X_test)
+
+p_result = pd.DataFrame(classifier.predict_proba(X_test))
+p_result.columns = classifier.classes_
+print(p_result)
+print(confusion_matrix(y_test, y_pred))
+print(classification_report(y_test, y_pred))
