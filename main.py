@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 import stanza
+from sklearn.model_selection import train_test_split
 from stanza.pipeline.core import DownloadMethod
 from transformers import pipeline
 from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
@@ -148,3 +149,21 @@ tfidfconverter = TfidfVectorizer(max_features=2000, min_df=4, max_df=0.90)
 x1 = tfidfconverter.fit_transform(temp["Interaction content"]).toarray()
 x2 = tfidfconverter.fit_transform(temp["ts_en"]).toarray()
 X = np.concatenate((x1, x2), axis=1)
+
+y = temp.y.to_numpy()
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+# remove bad test cases from test dataset
+Test_size = 0.20
+y_series = pd.Series(y)
+good_y_value = y_series.value_counts()[y_series.value_counts() >= 3].index
+y_good = y[y_series.isin(good_y_value)]
+X_good = X[y_series.isin(good_y_value)]
+y_bad = y[y_series.isin(good_y_value) == False]
+X_bad = X[y_series.isin(good_y_value) == False]
+test_size = X.shape[0] * 0.2 / X_good.shape[0]
+print("new_test_size:", {test_size.shape})
+X_train, X_test, y_train, y_test = train_test_split(X_good, y_good, test_size=test_size, random_state=0)
+X_train = np.concatenate((X_train, X_bad), axis=0)
+y_train = np.concatenate((y_train, y_bad), axis=0)
+
