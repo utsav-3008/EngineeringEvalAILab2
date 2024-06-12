@@ -8,6 +8,7 @@ from transformers import pipeline
 from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
 
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.ensemble import RandomForestClassifier
 
 df = pd.read_csv("AppGallery.csv")
 
@@ -166,4 +167,6 @@ print("new_test_size:", {test_size.shape})
 X_train, X_test, y_train, y_test = train_test_split(X_good, y_good, test_size=test_size, random_state=0)
 X_train = np.concatenate((X_train, X_bad), axis=0)
 y_train = np.concatenate((y_train, y_bad), axis=0)
+
+classifier = RandomForestClassifier(n_estimators=1000, random_state=0)
 
