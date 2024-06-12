@@ -6,6 +6,8 @@ from stanza.pipeline.core import DownloadMethod
 from transformers import pipeline
 from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
 
+from sklearn.feature_extraction.text import TfidfVectorizer
+
 df = pd.read_csv("AppGallery.csv")
 
 # convert the dtype object to unicode string
@@ -141,3 +143,8 @@ print(temp.y1.value_counts())
 good_y1 = temp.y1.value_counts()[temp.y1.value_counts() > 10].index
 temp = temp.loc[temp.y1.isin(good_y1)]
 print(temp.shape)
+
+tfidfconverter = TfidfVectorizer(max_features=2000, min_df=4, max_df=0.90)
+x1 = tfidfconverter.fit_transform(temp["Interaction content"]).toarray()
+x2 = tfidfconverter.fit_transform(temp["ts_en"]).toarray()
+X = np.concatenate((x1, x2), axis=1)
