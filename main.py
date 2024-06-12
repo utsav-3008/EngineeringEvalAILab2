@@ -170,3 +170,5 @@ y_train = np.concatenate((y_train, y_bad), axis=0)
 
 classifier = RandomForestClassifier(n_estimators=1000, random_state=0)
 
+classifier.fit(X_train, y_train)
+
